@@ -1,19 +1,26 @@
 <x-layouts.app :title="'Home'">
-    <div class="card" style="background: rgba(55,65,81,.6);">
-        <div style="display:flex; align-items:center; gap:1rem;">
-            <img src="{{ asset('assets/logo.png') }}" alt="logo" style="height:64px;">
-            <div>
-                <h3 style="margin:0; color:#fff;">Di era digital, setiap detail berharga.</h3>
-                <p style="margin:.25rem 0; color:#D1D5DB; max-width:60ch;">Platform ini dirancang untuk menvisualisasi interpretasi pencitraan medis, meningkatkan keakurasian, dan mempercepat proses klinis.</p>
-            </div>
-        </div>
-        <form method="get" action="{{ route('patients.index') }}" style="margin-top:1rem;">
-            <input type="search" name="q" placeholder="Cari pasien..." style="width:100%; border-radius:9999px;">
+    <div class="card card-hero">
+        <img src="{{ asset('logo.png') }}" alt="logo" class="logo-large">
+        <h2 style="margin:0 0 1rem 0;">Di era digital, setiap detail berharga. Platform ini dirancang untuk menvisualisasi interpretasi pencitraan medis, meningkatkan keakurasian, dan mempercepat proses klinis.</h2>
+        <form method="get" action="{{ route('patients.index') }}" style="max-width:500px; margin:1.5rem auto 0;">
+            <input type="search" name="q" placeholder="CARI">
         </form>
     </div>
-    <div class="card" style="min-height:200px;">
-        <h3 style="color:#fff; margin-top:0;">Data Terbaru</h3>
-        <p style="color:#9CA3AF;">Buka menu Patients untuk melihat daftar lengkap.</p>
+    <div class="card" style="max-width:900px; margin:2rem auto;">
+        <table style="width:100%;">
+            <thead>
+                <tr>
+                    <th>Column 1</th>
+                    <th>Column 2</th>
+                    <th>Column 3</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+                <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            </tbody>
+        </table>
     </div>
 </x-layouts.app>
 

@@ -1,14 +1,19 @@
 <x-layouts.app :title="'Login'">
-    <div class="card" style="max-width:420px; margin: 2rem auto;">
-        <h3 style="color:#fff; margin-top:0;">Login</h3>
+    <div class="card card-center">
+        <h2 style="margin:0 0 1.5rem 0; text-align:center; font-size:1.75rem;">LOGIN</h2>
         <form method="post" action="{{ route('auth.login.post') }}">
             @csrf
-            <input type="email" name="email" placeholder="Email" required style="width:100%; margin-bottom:.5rem;">
-            <input type="password" name="password" placeholder="Password" required style="width:100%; margin-bottom:.5rem;">
-            <label style="color:#D1D5DB;"><input type="checkbox" name="remember"> Remember me</label>
-            <button type="submit" class="process-button" style="width:100%; margin-top:.75rem;">Sign in</button>
+            <div style="margin-bottom:1.25rem;">
+                <label style="display:block; margin-bottom:.4rem; font-weight:600; font-size:.8rem; color:var(--text-main); text-transform:uppercase;">Email</label>
+                <input type="email" name="email" required style="padding:.75rem;">
+            </div>
+            <div style="margin-bottom:1.5rem;">
+                <label style="display:block; margin-bottom:.4rem; font-weight:600; font-size:.8rem; color:var(--text-main); text-transform:uppercase;">Password</label>
+                <input type="password" name="password" required style="padding:.75rem;">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%; padding:.75rem; font-size:1rem;">Sign Up</button>
         </form>
-        @error('email')<p style="color:#F87171;">{{ $message }}</p>@enderror
+        @error('email')<p style="color:var(--red); margin-top:.75rem; font-size:.9rem;">{{ $message }}</p>@enderror
     </div>
 </x-layouts.app>
 
