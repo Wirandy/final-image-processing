@@ -26,7 +26,6 @@ class PatientController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'identifier' => ['nullable', 'string', 'max:255'],
-            'notes' => ['nullable', 'string'],
         ]);
 
         $patient = Patient::create($data);
@@ -48,6 +47,25 @@ class PatientController extends Controller
             $q->orderByDesc('id');
         }]);
         return view('patients.show', compact('patient'));
+    }
+
+    public function update(Request $request, Patient $patient): RedirectResponse
+    {
+        $data = $request->validate([
+            'notes' => ['nullable', 'string'],
+        ]);
+
+        $patient->update($data);
+
+        ActivityLog::create([
+            'action' => 'patient.update',
+            'user_id' => optional($request->user())->id,
+            'patient_id' => $patient->id,
+            'ip' => $request->ip(),
+            'user_agent' => (string) $request->header('User-Agent'),
+        ]);
+
+        return redirect()->route('patients.show', $patient)->with('status', 'Notes updated successfully');
     }
 }
 

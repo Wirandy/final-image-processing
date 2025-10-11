@@ -6,57 +6,93 @@
     <title>Patient {{ $patient->name }}</title>
     <link rel="stylesheet" href="{{ asset('style.css') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
+    <style>
+        body { background-image: url('{{ asset('latar_belakang.png') }}'); }
+    </style>
 </head>
 <body>
     <header>
         <div class="container">
             <div class="header-content">
-                <div class="logo-group">
-                    <div class="logo-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12a5 5 0 0 1 5-5"/><path d="M12 17a5 5 0 0 1-5-5"/></svg>
-                    </div>
+                <div class="brand">
+                    <img src="{{ asset('logo.png') }}" alt="Logo">
                     <div>
-                        <h1>Forensics Imaging</h1>
+                        <h1>AIFI Imaging</h1>
                         <p class="subtitle">Patient: {{ $patient->name }} ({{ $patient->identifier }})</p>
                     </div>
                 </div>
-                <div id="status-badge" class="status-badge status-green">
-                    <div id="status-dot" class="status-dot dot-green"></div>
-                    <span id="status-text">Ready</span>
+                <div id="status-badge" class="status-badge status-active">
+                    <div id="status-dot" class="status-dot" style="background:var(--green);"></div>
+                    <span id="status-text">ACTIVE</span>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="container">
-        <div class="main-grid">
+    <div class="page-wrapper">
+    <main class="container" style="padding-top:1.5rem;">
+        <a href="{{ route('patients.index') }}" class="btn btn-primary" style="width:auto; display:inline-flex; text-decoration:none; align-items:center; gap:.5rem; margin-bottom:1.5rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Back to Patients
+        </a>
+
+        <div class="card" style="max-width:900px; margin:0 auto 1.5rem;">
+            <h2 style="margin:0 0 1.5rem 0; color:var(--text-main); font-size:1.5rem;">Patient Details</h2>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+                <div>
+                    <label style="font-weight:700; font-size:.8rem; color:var(--text-sec); text-transform:uppercase; display:block; margin-bottom:.5rem; letter-spacing:.5px;">Name</label>
+                    <div style="padding:1rem; background:#fff; border-radius:10px; border:2px solid var(--gray-300); font-size:1.05rem; font-weight:600;">{{ $patient->name }}</div>
+                </div>
+                <div>
+                    <label style="font-weight:700; font-size:.8rem; color:var(--text-sec); text-transform:uppercase; display:block; margin-bottom:.5rem; letter-spacing:.5px;">Email</label>
+                    <div style="padding:1rem; background:#fff; border-radius:10px; border:2px solid var(--gray-300); font-size:1.05rem; font-weight:600;">{{ $patient->identifier }}</div>
+                </div>
+            </div>
+            
+            <div style="margin-top:1.5rem;">
+                <label style="font-weight:700; font-size:.8rem; color:var(--text-sec); text-transform:uppercase; display:block; margin-bottom:.5rem; letter-spacing:.5px;">Notes</label>
+                @auth
+                <form method="post" action="{{ route('patients.update', $patient) }}" style="margin:0;">
+                    @csrf
+                    @method('PUT')
+                    <textarea name="notes" style="min-height:120px; resize:vertical; font-size:.95rem;" placeholder="Add notes about this patient...">{{ $patient->notes }}</textarea>
+                    <button type="submit" class="btn btn-primary" style="margin-top:1rem; width:auto;">Save Notes</button>
+                </form>
+                @else
+                <div style="padding:1.25rem; background:#fff; border-left:4px solid var(--primary); border-radius:10px; line-height:1.7; min-height:80px; border:2px solid var(--gray-300);">
+                    {{ $patient->notes ?: 'No notes available.' }}
+                </div>
+                @endauth
+            </div>
+        </div>
+
+        <div class="main-grid" style="max-width:1200px; margin:0 auto;">
             <div class="col-span-3 space-y-6">
                 <div class="card">
-                    <h3 style="font-weight:bold; color:white; margin-top:0;">Upload Image</h3>
+                    <h3 style="font-weight:bold; margin-top:0;">Upload Image</h3>
                     @auth
                     <form method="post" action="{{ route('images.upload', $patient) }}" enctype="multipart/form-data">
                         @csrf
                         <input type="file" name="image" accept=".png,.jpg,.jpeg,.dcm" required />
-                        <button type="submit" class="process-button" style="margin-top:.75rem; width:auto;">Upload</button>
-                        <a href="{{ route('patients.index') }}" class="process-button" style="margin-left:.5rem; width:auto; display:inline-block; text-decoration:none; text-align:center;">Back</a>
+                        <button type="submit" class="btn btn-primary" style="margin-top:.75rem; width:auto;">Upload</button>
                     </form>
                     @else
-                        <a href="{{ route('auth.login') }}" class="process-button" style="width:auto; display:inline-block; text-decoration:none; text-align:center;">Login to upload</a>
+                        <a href="{{ route('auth.login') }}" class="btn btn-primary" style="width:auto; display:inline-block; text-decoration:none; text-align:center;">Login to upload</a>
                     @endauth
                     @if(session('status'))
-                        <p style="margin-top:.75rem; color:#6EE7B7;">{{ session('status') }}</p>
+                        <p style="margin-top:.75rem; color:var(--green);">{{ session('status') }}</p>
                     @endif
                     @if(session('error'))
-                        <p style="margin-top:.75rem; color:#F87171;">{{ session('error') }}</p>
+                        <p style="margin-top:.75rem; color:var(--red);">{{ session('error') }}</p>
                     @endif
                 </div>
 
                 <div id="image-preview-section" class="card" style="padding:0; {{ $patient->images->count() ? '' : 'display:none;' }}">
                     <div class="preview-header">
-                        <h3 style="font-weight:bold; color:white; margin:0;">Image Preview</h3>
+                        <h3 style="font-weight:bold; margin:0;">Image Preview</h3>
                         <div class="preview-toggle">
-                            <button id="view-original-btn" class="active">Original</button>
-                            <button id="view-processed-btn">Processed</button>
+                            <button id="view-original-btn" class="active">NORMAL</button>
+                            <button id="view-processed-btn">FILTER</button>
                         </div>
                     </div>
                     <div class="preview-content">
@@ -69,17 +105,17 @@
                 </div>
 
                 <div class="card">
-                    <h3 style="font-weight:bold; color:white; margin-top:0;">Images</h3>
+                    <h3 style="font-weight:bold; margin-top:0;">Images</h3>
                     <div class="space-y-2">
                         @foreach($patient->images as $img)
                         <div class="card" style="padding: .75rem;">
                             <div class="row" style="justify-content: space-between;">
-                                <div style="color:var(--text-dark);">#{{ $img->id }}</div>
+                                <div style="color:var(--text-sec);">#{{ $img->id }}</div>
                                 @auth
                                 <form method="post" action="{{ route('images.destroy', $img) }}" onsubmit="return confirm('Delete this image?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="process-button" style="width:auto;">Delete</button>
+                                    <button type="submit" class="btn btn-danger" style="width:auto; font-size:.85rem; padding:.35rem .7rem;">Delete</button>
                                 </form>
                                 @endauth
                             </div>
@@ -88,10 +124,10 @@
                                 @if($img->processed_path)
                                 <img src="{{ asset('storage/'.$img->processed_path) }}" alt="processed" style="max-width:120px; border-radius:.375rem;">
                                 @endif
-                                <button class="process-button" style="width:auto;" onclick="selectImage({{ $img->id }}, '{{ asset('storage/'.$img->original_path) }}', '{{ $img->processed_path ? asset('storage/'.$img->processed_path) : '' }}')">Preview</button>
+                                <button class="btn btn-primary" style="width:auto; font-size:.85rem; padding:.35rem .7rem;" onclick="selectImage({{ $img->id }}, '{{ asset('storage/'.$img->original_path) }}', '{{ $img->processed_path ? asset('storage/'.$img->processed_path) : '' }}')">Preview</button>
                             </div>
                             @if($img->features_text)
-                                <pre style="white-space:pre-wrap; color:#fff; margin-top:.5rem;">{{ $img->features_text }}</pre>
+                                <pre style="white-space:pre-wrap; color:var(--text-main); margin-top:.5rem;">{{ $img->features_text }}</pre>
                             @endif
                             @auth
                             <form id="proc-{{ $img->id }}" method="post" action="{{ route('images.process', $img) }}">
@@ -107,15 +143,16 @@
 
             <div id="controls-section" class="col-span-2">
                 <div class="card space-y-4">
-                    <h3 style="font-weight:bold; color:white; margin-bottom:1rem;">Control Panel</h3>
+                    <h3 style="font-weight:bold; margin-bottom:1rem;">FILTER</h3>
                     <div id="accordion-container" class="space-y-2"></div>
                     @guest
-                        <p style="color:#D1D5DB;">Login untuk memproses gambar.</p>
+                        <p style="color:var(--text-sec);">Login untuk memproses gambar.</p>
                     @endguest
                 </div>
             </div>
         </div>
     </main>
+    </div>
 
     <script>
         const processingMethods = {
