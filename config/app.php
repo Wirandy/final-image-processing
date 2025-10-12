@@ -129,6 +129,10 @@ return [
     // Python executable path for image processing
     'python_path' => env('PYTHON_PATH', 'C:\\Users\\lenovo\\AppData\\Local\\Programs\\Python\\Python313\\python.exe'),
 
+    // Roboflow API configuration for forensic analysis
+    'roboflow_api_key' => env('ROBOFLOW_API_KEY', 'iN6mDa0muAE7Y0Gvp7OM'),
+    'roboflow_model_id' => env('ROBOFLOW_MODEL_ID', 'wrist-fracture-bindi/1'),
+
     /*
     |--------------------------------------------------------------------------
     | Maintenance Mode Driver

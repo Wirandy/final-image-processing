@@ -73,8 +73,9 @@
                     @auth
                     <form method="post" action="{{ route('images.upload', $patient) }}" enctype="multipart/form-data">
                         @csrf
-                        <input type="file" name="image" accept=".png,.jpg,.jpeg,.dcm" required />
+                        <input type="file" name="image" accept="image/*,.dcm" required />
                         <button type="submit" class="btn btn-primary" style="margin-top:.75rem; width:auto;">Upload</button>
+                        <p style="font-size:0.85rem; color:var(--text-sec); margin-top:0.5rem;">Supported: PNG, JPG, JPEG, DCM, BMP, GIF, WEBP (max 20MB)</p>
                     </form>
                     @else
                         <a href="{{ route('auth.login') }}" class="btn btn-primary" style="width:auto; display:inline-block; text-decoration:none; text-align:center;">Login to upload</a>
@@ -99,15 +100,15 @@
                         @php $first = $patient->images->first(); @endphp
                         @if($first)
                         <img id="original-image" src="{{ asset('storage/'.$first->original_path) }}" alt="Original">
-                        <img id="processed-image" src="{{ $first->processed_path ? asset('storage/'.$first->processed_path) : '' }}" alt="Processed" class="{{ $first->processed_path ? 'hidden' : 'hidden' }}">
+                        <img id="processed-image" src="{{ $first->annotated_path ? asset('storage/'.$first->annotated_path) : ($first->processed_path ? asset('storage/'.$first->processed_path) : '') }}" alt="Processed" class="{{ ($first->annotated_path || $first->processed_path) ? 'hidden' : 'hidden' }}">
                         @endif
                     </div>
                 </div>
 
                 <div class="card">
-                    <h3 style="font-weight:bold; margin-top:0;">Images</h3>
+                    <h3 style="font-weight:bold; margin-top:0;">Images ({{ $patient->images->count() }})</h3>
                     <div class="space-y-2">
-                        @foreach($patient->images as $img)
+                        @forelse($patient->images as $img)
                         <div class="card" style="padding: .75rem;">
                             <div class="row" style="justify-content: space-between;">
                                 <div style="color:var(--text-sec);">#{{ $img->id }}</div>
@@ -122,21 +123,45 @@
                             <div class="row" style="margin-top:.5rem; gap: .75rem;">
                                 <img src="{{ asset('storage/'.$img->original_path) }}" alt="original" style="max-width:120px; border-radius:.375rem;">
                                 @if($img->processed_path)
-                                <img src="{{ asset('storage/'.$img->processed_path) }}" alt="processed" style="max-width:120px; border-radius:.375rem;">
+                                <img src="{{ asset('storage/'.$img->processed_path) }}" alt="processed" style="max-width:120px; border-radius:.375rem; border:2px solid #28a745;">
+                                @elseif($img->annotated_path)
+                                <img src="{{ asset('storage/'.$img->annotated_path) }}" alt="annotated" style="max-width:120px; border-radius:.375rem; border:2px solid #007bff;">
                                 @endif
-                                <button class="btn btn-primary" style="width:auto; font-size:.85rem; padding:.35rem .7rem;" onclick="selectImage({{ $img->id }}, '{{ asset('storage/'.$img->original_path) }}', '{{ $img->processed_path ? asset('storage/'.$img->processed_path) : '' }}')">Preview</button>
+                                <button class="btn btn-primary" style="width:auto; font-size:.85rem; padding:.35rem .7rem;" onclick="selectImage({{ $img->id }}, '{{ asset('storage/'.$img->original_path) }}', '{{ $img->processed_path ? asset('storage/'.$img->processed_path) : ($img->annotated_path ? asset('storage/'.$img->annotated_path) : '') }}')">Preview</button>
                             </div>
-                            @if($img->features_text)
-                                <pre style="white-space:pre-wrap; color:var(--text-main); margin-top:.5rem;">{{ $img->features_text }}</pre>
+                            @if($img->forensic_summary && !$img->processed_path)
+                                {{-- Only show forensic results if no regular filter has been applied --}}
+                                <div style="margin-top:.75rem; padding:1rem; background:#f8f9fa; border-left:4px solid #007bff; border-radius:.375rem;">
+                                    <h4 style="margin:0 0 .5rem 0; color:#007bff; font-size:.9rem;">🔬 Forensic Analysis Results</h4>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:.5rem; margin-bottom:.75rem;">
+                                        <div><strong>Injuries Detected:</strong> {{ $img->injury_count }}</div>
+                                        <div><strong>Severity:</strong> <span style="color:{{ str_contains($img->severity_level ?? '', 'parah') ? '#dc3545' : (str_contains($img->severity_level ?? '', 'sedang') ? '#ffc107' : '#28a745') }}; font-weight:bold;">{{ strtoupper($img->severity_level ?? 'NONE') }}</span></div>
+                                    </div>
+                                    <div style="font-family: 'Courier New', monospace; color:var(--text-main); font-size:.85rem; line-height:1.8; white-space: pre-line; word-wrap: break-word;">{!! nl2br(e($img->forensic_summary)) !!}</div>
+                                </div>
+                            @elseif($img->features_text && $img->processed_path)
+                                {{-- Show filter features if regular filter applied --}}
+                                <div style="margin-top:.75rem; padding:1rem; background:#f0f9ff; border-left:4px solid #28a745; border-radius:.375rem;">
+                                    <h4 style="margin:0 0 .5rem 0; color:#28a745; font-size:.9rem;">🎨 Filter Applied: {{ $img->method }}</h4>
+                                    <pre style="white-space:pre-wrap; color:var(--text-main); font-size:.85rem; line-height:1.6; margin:0;">{{ $img->features_text }}</pre>
+                                </div>
                             @endif
                             @auth
                             <form id="proc-{{ $img->id }}" method="post" action="{{ route('images.process', $img) }}">
                                 @csrf
                                 <input type="hidden" name="method" value="">
                             </form>
+                            <form id="forensic-{{ $img->id }}" method="post" action="{{ route('images.forensic.analyze', $img) }}">
+                                @csrf
+                            </form>
                             @endauth
                         </div>
-                        @endforeach
+                        @empty
+                        <div style="padding: 2rem; text-align: center; color: var(--text-sec);">
+                            <p style="font-size: 1.1rem; margin: 0;">📷 No images uploaded yet</p>
+                            <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">Upload an image above to get started</p>
+                        </div>
+                        @endforelse
                     </div>
                 </div>
             </div>
@@ -156,6 +181,7 @@
 
     <script>
         const processingMethods = {
+            "🔬 AI Forensic Analysis": ["Forensic AI Analysis"],
             "Filters & Smoothing": ["Median Filter", "Gaussian Filter", "Bilateral Filter"],
             "Contrast & Enhancement": ["Histogram Equalization", "CLAHE", "Normalized"],
             "Edge Detection": ["Sobel X", "Sobel Y", "Laplacian", "Canny"],
@@ -196,9 +222,30 @@
                     button.className = 'process-button';
                     button.textContent = method;
                     button.addEventListener('click', () => {
-                        if(!window.currentImageId){ alert('Select an image (Preview) first.'); return; }
+                        if(!window.currentImageId){ 
+                            alert('Select an image (Preview) first.'); 
+                            return; 
+                        }
+                        
+                        // Check if it's forensic analysis
+                        if(method === 'Forensic AI Analysis') {
+                            const forensicForm = document.getElementById('forensic-'+window.currentImageId);
+                            if(forensicForm) {
+                                if(confirm('Run AI-powered forensic analysis? This will detect injuries, assess severity, and suggest probable causes.')) {
+                                    forensicForm.submit();
+                                }
+                            } else {
+                                alert('Form not found for image ID: ' + window.currentImageId);
+                            }
+                            return;
+                        }
+                        
+                        // Regular processing
                         const form = document.getElementById('proc-'+window.currentImageId);
-                        if(!form) return;
+                        if(!form) {
+                            alert('Processing form not found for image ID: ' + window.currentImageId + '. Please click Preview button first.');
+                            return;
+                        }
                         form.method.value = method;
                         form.submit();
                     });
@@ -237,8 +284,22 @@
         });
 
         createAccordions();
+        
+        // Auto-select first image on page load
         @if($first)
         window.currentImageId = {{ $first->id }};
+        // Auto-update preview images when page loads
+        const firstOriginal = '{{ asset('storage/'.$first->original_path) }}';
+        // Priority: processed_path (latest filter) > annotated_path (forensic)
+        const firstProcessed = '{{ $first->processed_path ? asset('storage/'.$first->processed_path) : ($first->annotated_path ? asset('storage/'.$first->annotated_path) : '') }}';
+        if(originalImage) originalImage.src = firstOriginal;
+        if(processedImage && firstProcessed) {
+            processedImage.src = firstProcessed;
+            // If there's a processed/annotated image, show it automatically
+            if(firstProcessed && '{{ $first->processed_path || $first->annotated_path }}') {
+                viewProcessedBtn?.click();
+            }
+        }
         @endif
     </script>
 </body>

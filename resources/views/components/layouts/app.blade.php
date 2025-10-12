@@ -28,9 +28,12 @@
                     </div>
                 </div>
                 <nav>
+                    <a class="nav" href="{{ route('home') }}">Home</a>
                     <a class="nav" href="{{ route('patients.index') }}">Patients</a>
+                    <a class="nav" href="{{ route('about') }}">About</a>
+                    <a class="nav" href="{{ route('qna') }}">QnA</a>
                     @auth
-                        <span class="nav">Hi, {{ auth()->user()->name }}</span>
+                        <span class="nav" style="color:#10b981;">👤 {{ auth()->user()->name }}</span>
                         <a class="nav" href="{{ route('auth.logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
                         <form id="logout-form" method="post" action="{{ route('auth.logout') }}" style="display:none;">@csrf</form>
                     @else

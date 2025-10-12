@@ -14,8 +14,17 @@ class StudyImage extends Model
         'patient_id',
         'original_path',
         'processed_path',
+        'annotated_path',
         'method',
         'features_text',
+        'forensic_analysis',
+        'forensic_summary',
+        'injury_count',
+        'severity_level',
+    ];
+
+    protected $casts = [
+        'forensic_analysis' => 'array',
     ];
 
     public function patient(): BelongsTo

@@ -64,8 +64,8 @@ main { padding: 1.5rem 0; }
 .preview-toggle { display:flex; background: #fff; border:1px solid var(--gray-300); border-radius:9999px; padding:.25rem; }
 .preview-toggle button { border:none; background:transparent; color: var(--text-sec); padding:.25rem .9rem; font-size:.875rem; border-radius:9999px; cursor:pointer; }
 .preview-toggle button.active { background: var(--primary); color:#fff; }
-.preview-content { padding:1rem; min-height:300px; display:flex; align-items:center; justify-content:center; }
-.preview-content img { max-height:60vh; width:auto; border-radius:12px; box-shadow: 0 6px 18px rgba(0,0,0,.15); background:#fff; }
+.preview-content { padding:1rem; min-height:300px; max-height:500px; display:flex; align-items:center; justify-content:center; overflow:hidden; background:#1a1a1a; }
+.preview-content img { max-width:100%; max-height:450px; width:auto; height:auto; object-fit:contain; border-radius:12px; box-shadow: 0 6px 18px rgba(0,0,0,.15); }
 .accordion-item { background: var(--bg-overlay); border:1px solid var(--gray-300); border-radius:12px; }
 .accordion-header { width:100%; display:flex; justify-content:space-between; align-items:center; padding:.75rem 1rem; text-align:left; font-weight:700; color: var(--text-main); background:transparent; border:none; cursor:pointer; }
 .accordion-header svg { width:1.25rem; height:1.25rem; transition: transform .3s; }

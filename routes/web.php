@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ForensicAnalysisController;
 
 Route::get('/', function () { return view('home'); })->name('home');
 Route::view('/about', 'about')->name('about');
@@ -16,6 +17,7 @@ Route::put('/patients/{patient}', [PatientController::class, 'update'])->middlew
 
 Route::post('/patients/{patient}/images', [ImageController::class, 'upload'])->middleware('auth')->name('images.upload');
 Route::post('/images/{image}/process', [ImageController::class, 'process'])->middleware('auth')->name('images.process');
+Route::post('/images/{image}/forensic-analyze', [ForensicAnalysisController::class, 'analyze'])->middleware('auth')->name('images.forensic.analyze');
 Route::delete('/images/{image}', [ImageController::class, 'destroy'])->middleware('auth')->name('images.destroy');
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('auth.login');
