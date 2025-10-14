@@ -59,31 +59,55 @@ class ForensicAnalysisController extends Controller
                 return back()->with('error', 'Analysis completed but output format invalid. Please check Python script.');
             }
 
-            // Save annotated image
+            // Save forensic annotated image to processed_path
             $annotatedFile = $result['annotated_path'] ?? null;
             if ($annotatedFile && file_exists($annotatedFile)) {
-                $destName = 'uploads/annotated/' . basename($annotatedFile);
+                // Generate unique filename to prevent overwriting
+                $extension = pathinfo($annotatedFile, PATHINFO_EXTENSION);
+                $uniqueName = $image->id . '_' . time() . '_' . \Str::random(6) . '.' . $extension;
+                $destName = 'uploads/processed/' . $uniqueName;
                 $destPath = storage_path('app/public/' . $destName);
                 
                 if (!is_dir(dirname($destPath))) {
                     mkdir(dirname($destPath), 0777, true);
                 }
                 
-                // Delete old annotated file if exists
-                if ($image->annotated_path && $image->annotated_path !== $destName) {
-                    Storage::disk('public')->delete($image->annotated_path);
+                copy($annotatedFile, $destPath);
+                
+                // Add to processing history (keep max 3)
+                $history = $image->processing_history ?? [];
+                
+                // Add new entry at the beginning
+                array_unshift($history, [
+                    'path' => $destName,
+                    'method' => 'Forensic AI Analysis',
+                    'features_text' => sprintf(
+                        'Detected %d injuries with %s severity. AI-powered forensic analysis with bounding boxes.',
+                        $result['injury_count'] ?? 0,
+                        $result['severity_level'] ?? 'unknown'
+                    ),
+                    'timestamp' => now()->toDateTimeString(),
+                ]);
+                
+                // Keep only last 3 entries
+                $history = array_slice($history, 0, 3);
+                
+                // Delete old files that are no longer in history (but keep processed_path)
+                if ($image->processing_history) {
+                    $historyPaths = array_column($history, 'path');
+                    foreach ($image->processing_history as $old) {
+                        $oldPath = $old['path'] ?? null;
+                        // Only delete if: not in new history AND not the current processed_path
+                        if ($oldPath && !in_array($oldPath, $historyPaths) && $oldPath !== $image->processed_path) {
+                            if (Storage::disk('public')->exists($oldPath)) {
+                                Storage::disk('public')->delete($oldPath);
+                            }
+                        }
+                    }
                 }
                 
-                copy($annotatedFile, $destPath);
-                $image->annotated_path = $destName;
-            }
-
-            // Clear processed_path when running forensic analysis
-            // This ensures annotated image is shown, not the old processed image
-            if ($image->processed_path) {
-                Storage::disk('public')->delete($image->processed_path);
-                $image->processed_path = null;
-                $image->features_text = null;
+                $image->processed_path = $destName;
+                $image->processing_history = $history;
             }
 
             // Save forensic analysis results
@@ -98,6 +122,11 @@ class ForensicAnalysisController extends Controller
             $image->injury_count = $result['injury_count'] ?? 0;
             $image->severity_level = $result['severity_level'] ?? 'none';
             $image->method = 'Forensic AI Analysis';
+            $image->features_text = sprintf(
+                'Detected %d injuries with %s severity. AI-powered forensic analysis with bounding boxes and classifications.',
+                $result['injury_count'] ?? 0,
+                $result['severity_level'] ?? 'unknown'
+            );
             $image->save();
 
             ActivityLog::create([

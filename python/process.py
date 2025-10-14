@@ -41,32 +41,59 @@ def process_image(filename, method):
             result = cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX)
             features_text = "Applied Normalization (0-255 range)"
         elif method == "Sobel X":
-            result = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=3)
+            # Enhance contrast first for better edge detection
+            clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+            enhanced = clahe.apply(img)
+            result = cv2.Sobel(enhanced, cv2.CV_64F, 1, 0, ksize=3)
             result = cv2.convertScaleAbs(result)
-            features_text = "Applied Sobel X - horizontal edge detection"
+            # Enhance result visibility
+            result = cv2.normalize(result, None, 0, 255, cv2.NORM_MINMAX)
+            features_text = "Applied Sobel X - horizontal edge detection (with contrast enhancement)"
         elif method == "Sobel Y":
-            result = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=3)
+            # Enhance contrast first for better edge detection
+            clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+            enhanced = clahe.apply(img)
+            result = cv2.Sobel(enhanced, cv2.CV_64F, 0, 1, ksize=3)
             result = cv2.convertScaleAbs(result)
-            features_text = "Applied Sobel Y - vertical edge detection"
+            # Enhance result visibility
+            result = cv2.normalize(result, None, 0, 255, cv2.NORM_MINMAX)
+            features_text = "Applied Sobel Y - vertical edge detection (with contrast enhancement)"
         elif method == "Laplacian":
-            result = cv2.Laplacian(img, cv2.CV_64F)
+            # Enhance contrast first for better edge detection
+            clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+            enhanced = clahe.apply(img)
+            result = cv2.Laplacian(enhanced, cv2.CV_64F)
             result = cv2.convertScaleAbs(result)
-            features_text = "Applied Laplacian edge detection"
+            # Enhance result visibility
+            result = cv2.normalize(result, None, 0, 255, cv2.NORM_MINMAX)
+            features_text = "Applied Laplacian edge detection (with contrast enhancement)"
         elif method == "Canny":
-            result = cv2.Canny(img, 100, 200)
-            features_text = "Applied Canny edge detection (threshold: 100-200)"
+            # Enhance contrast first for better edge detection
+            clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+            enhanced = clahe.apply(img)
+            result = cv2.Canny(enhanced, 50, 150)
+            features_text = "Applied Canny edge detection (threshold: 50-150, with contrast enhancement)"
         elif method == "Opening":
+            # Enhance contrast first
+            clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+            enhanced = clahe.apply(img)
             kernel = np.ones((5, 5), np.uint8)
-            result = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
-            features_text = "Applied Morphological Opening (erosion + dilation)"
+            result = cv2.morphologyEx(enhanced, cv2.MORPH_OPEN, kernel)
+            features_text = "Applied Morphological Opening (erosion + dilation, with contrast enhancement)"
         elif method == "Closing":
+            # Enhance contrast first
+            clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+            enhanced = clahe.apply(img)
             kernel = np.ones((5, 5), np.uint8)
-            result = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
-            features_text = "Applied Morphological Closing (dilation + erosion)"
+            result = cv2.morphologyEx(enhanced, cv2.MORPH_CLOSE, kernel)
+            features_text = "Applied Morphological Closing (dilation + erosion, with contrast enhancement)"
         elif method == "Erosion":
+            # Enhance contrast first
+            clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+            enhanced = clahe.apply(img)
             kernel = np.ones((5, 5), np.uint8)
-            result = cv2.erode(img, kernel, iterations=1)
-            features_text = "Applied Erosion - shrinks bright regions"
+            result = cv2.erode(enhanced, kernel, iterations=1)
+            features_text = "Applied Erosion - shrinks bright regions (with contrast enhancement)"
         elif method == "Fourier Spectrum":
             dft = cv2.dft(np.float32(img), flags=cv2.DFT_COMPLEX_OUTPUT)
             dft_shift = np.fft.fftshift(dft)

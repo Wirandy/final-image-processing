@@ -56,7 +56,7 @@
                     @csrf
                     @method('PUT')
                     <textarea name="notes" style="min-height:120px; resize:vertical; font-size:.95rem;" placeholder="Add notes about this patient...">{{ $patient->notes }}</textarea>
-                    <button type="submit" class="btn btn-primary" style="margin-top:1rem; width:auto;">Save Notes</button>
+                    <button type="submit" class="btn btn-primary" style="margin-top:1rem; width:auto;">Save</button>
                 </form>
                 @else
                 <div style="padding:1.25rem; background:#fff; border-left:4px solid var(--primary); border-radius:10px; line-height:1.7; min-height:80px; border:2px solid var(--gray-300);">
@@ -100,7 +100,7 @@
                         @php $first = $patient->images->first(); @endphp
                         @if($first)
                         <img id="original-image" src="{{ asset('storage/'.$first->original_path) }}" alt="Original">
-                        <img id="processed-image" src="{{ $first->annotated_path ? asset('storage/'.$first->annotated_path) : ($first->processed_path ? asset('storage/'.$first->processed_path) : '') }}" alt="Processed" class="{{ ($first->annotated_path || $first->processed_path) ? 'hidden' : 'hidden' }}">
+                        <img id="processed-image" src="{{ $first->processed_path ? asset('storage/'.$first->processed_path) : '' }}" alt="Processed" class="{{ $first->processed_path ? 'hidden' : 'hidden' }}">
                         @endif
                     </div>
                 </div>
@@ -120,30 +120,50 @@
                                 </form>
                                 @endauth
                             </div>
-                            <div class="row" style="margin-top:.5rem; gap: .75rem;">
+                            <div class="row" style="margin-top:.5rem; gap: .75rem; flex-wrap: wrap;">
                                 <img src="{{ asset('storage/'.$img->original_path) }}" alt="original" style="max-width:120px; border-radius:.375rem;">
                                 @if($img->processed_path)
                                 <img src="{{ asset('storage/'.$img->processed_path) }}" alt="processed" style="max-width:120px; border-radius:.375rem; border:2px solid #28a745;">
-                                @elseif($img->annotated_path)
-                                <img src="{{ asset('storage/'.$img->annotated_path) }}" alt="annotated" style="max-width:120px; border-radius:.375rem; border:2px solid #007bff;">
                                 @endif
-                                <button class="btn btn-primary" style="width:auto; font-size:.85rem; padding:.35rem .7rem;" onclick="selectImage({{ $img->id }}, '{{ asset('storage/'.$img->original_path) }}', '{{ $img->processed_path ? asset('storage/'.$img->processed_path) : ($img->annotated_path ? asset('storage/'.$img->annotated_path) : '') }}')">Preview</button>
-                            </div>
-                            @if($img->forensic_summary && !$img->processed_path)
-                                {{-- Only show forensic results if no regular filter has been applied --}}
-                                <div style="margin-top:.75rem; padding:1rem; background:#f8f9fa; border-left:4px solid #007bff; border-radius:.375rem;">
-                                    <h4 style="margin:0 0 .5rem 0; color:#007bff; font-size:.9rem;">🔬 Forensic Analysis Results</h4>
-                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:.5rem; margin-bottom:.75rem;">
-                                        <div><strong>Injuries Detected:</strong> {{ $img->injury_count }}</div>
-                                        <div><strong>Severity:</strong> <span style="color:{{ str_contains($img->severity_level ?? '', 'parah') ? '#dc3545' : (str_contains($img->severity_level ?? '', 'sedang') ? '#ffc107' : '#28a745') }}; font-weight:bold;">{{ strtoupper($img->severity_level ?? 'NONE') }}</span></div>
-                                    </div>
-                                    <div style="font-family: 'Courier New', monospace; color:var(--text-main); font-size:.85rem; line-height:1.8; white-space: pre-line; word-wrap: break-word;">{!! nl2br(e($img->forensic_summary)) !!}</div>
+                                <div style="display:flex; flex-direction:column; gap:.5rem;">
+                                    <button class="btn btn-primary" style="width:auto; font-size:.85rem; padding:.35rem .7rem;" onclick="selectImage({{ $img->id }}, '{{ asset('storage/'.$img->original_path) }}', '{{ $img->processed_path ? asset('storage/'.$img->processed_path) : '' }}')">Preview</button>
+                                    @auth
+                                    <form method="post" action="{{ route('images.report.generate', $img) }}" style="margin:0;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-primary" style="width:100%; font-size:.85rem; padding:.35rem .7rem; background:#17a2b8; border-color:#17a2b8;">Generate Report</button>
+                                    </form>
+                                    @endauth
                                 </div>
-                            @elseif($img->features_text && $img->processed_path)
-                                {{-- Show filter features if regular filter applied --}}
+                            </div>
+                            @if($img->features_text && $img->processed_path)
+                                {{-- Show current filter features --}}
                                 <div style="margin-top:.75rem; padding:1rem; background:#f0f9ff; border-left:4px solid #28a745; border-radius:.375rem;">
-                                    <h4 style="margin:0 0 .5rem 0; color:#28a745; font-size:.9rem;">🎨 Filter Applied: {{ $img->method }}</h4>
+                                    <h4 style="margin:0 0 .5rem 0; color:#28a745; font-size:.9rem;">{{ $img->method }}</h4>
                                     <pre style="white-space:pre-wrap; color:var(--text-main); font-size:.85rem; line-height:1.6; margin:0;">{{ $img->features_text }}</pre>
+                                </div>
+                            @endif
+
+                            @if($img->processing_history && count($img->processing_history) > 0)
+                                {{-- Show processing history (max 3) --}}
+                                <div style="margin-top:.75rem; padding:1rem; background:#fff3cd; border-left:4px solid #ffc107; border-radius:.375rem;">
+                                    <h4 style="margin:0 0 .75rem 0; color:#856404; font-size:.9rem; font-weight:600;">Processing History ({{ count($img->processing_history) }})</h4>
+                                    <div style="display:grid; gap:.75rem;">
+                                        @foreach($img->processing_history as $idx => $history)
+                                        <div style="padding:.75rem; background:white; border-radius:.375rem; border:1px solid #ffc107;">
+                                            <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:.5rem;">
+                                                <strong style="color:#856404; font-size:.85rem;">{{ $idx + 1 }}. {{ $history['method'] ?? 'Unknown' }}</strong>
+                                                <span style="font-size:.75rem; color:#6c757d;">{{ \Carbon\Carbon::parse($history['timestamp'] ?? now())->format('d/m/Y H:i') }}</span>
+                                            </div>
+                                            @if(isset($history['path']) && \Storage::disk('public')->exists($history['path']))
+                                            <img src="{{ asset('storage/'.$history['path']) }}" alt="history" style="max-width:100%; height:auto; border-radius:.25rem; margin-bottom:.5rem; border:1px solid #dee2e6;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                            <div style="display:none; padding:1rem; background:#f8d7da; color:#721c24; border-radius:.25rem; text-align:center;">Image failed to load</div>
+                                            @else
+                                            <div style="padding:1rem; background:#f8d7da; color:#721c24; border-radius:.25rem; text-align:center;">Image file not found</div>
+                                            @endif
+                                            <p style="margin:0; font-size:.8rem; color:#6c757d; line-height:1.4;">{{ $history['features_text'] ?? 'No description' }}</p>
+                                        </div>
+                                        @endforeach
+                                    </div>
                                 </div>
                             @endif
                             @auth
@@ -158,7 +178,7 @@
                         </div>
                         @empty
                         <div style="padding: 2rem; text-align: center; color: var(--text-sec);">
-                            <p style="font-size: 1.1rem; margin: 0;">📷 No images uploaded yet</p>
+                            <p style="font-size: 1.1rem; margin: 0;">No images uploaded yet</p>
                             <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">Upload an image above to get started</p>
                         </div>
                         @endforelse
@@ -180,8 +200,18 @@
     </div>
 
     <script>
+        // Prevent form resubmission on page reload
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+
+        // Clear URL hash on load to prevent scroll issues
+        if (window.location.hash) {
+            window.history.replaceState(null, null, window.location.pathname + window.location.search);
+        }
+
         const processingMethods = {
-            "🔬 AI Forensic Analysis": ["Forensic AI Analysis"],
+            "AI Forensic Analysis": ["Forensic AI Analysis"],
             "Filters & Smoothing": ["Median Filter", "Gaussian Filter", "Bilateral Filter"],
             "Contrast & Enhancement": ["Histogram Equalization", "CLAHE", "Normalized"],
             "Edge Detection": ["Sobel X", "Sobel Y", "Laplacian", "Canny"],
@@ -290,13 +320,12 @@
         window.currentImageId = {{ $first->id }};
         // Auto-update preview images when page loads
         const firstOriginal = '{{ asset('storage/'.$first->original_path) }}';
-        // Priority: processed_path (latest filter) > annotated_path (forensic)
-        const firstProcessed = '{{ $first->processed_path ? asset('storage/'.$first->processed_path) : ($first->annotated_path ? asset('storage/'.$first->annotated_path) : '') }}';
+        const firstProcessed = '{{ $first->processed_path ? asset('storage/'.$first->processed_path) : '' }}';
         if(originalImage) originalImage.src = firstOriginal;
         if(processedImage && firstProcessed) {
             processedImage.src = firstProcessed;
-            // If there's a processed/annotated image, show it automatically
-            if(firstProcessed && '{{ $first->processed_path || $first->annotated_path }}') {
+            // If there's a processed image, show it automatically
+            if(firstProcessed && '{{ $first->processed_path }}') {
                 viewProcessedBtn?.click();
             }
         }

@@ -4,14 +4,14 @@
         
         <div style="margin-top: 2rem; text-align: left;">
             <div style="margin-bottom: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 10px; border-left: 4px solid var(--primary);">
-                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">🔬 Apa itu AI Forensic Analysis?</h3>
+                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">Apa itu AI Forensic Analysis?</h3>
                 <p style="color: var(--text-sec); line-height: 1.8; margin: 0;">
                     AI Forensic Analysis adalah fitur analisis forensik medis berbasis kecerdasan buatan yang dapat mendeteksi cedera, menilai tingkat keparahan, memprediksi penyebab cedera, dan mengidentifikasi fitur post-mortem secara otomatis menggunakan teknologi CNN dan Roboflow API.
                 </p>
             </div>
 
             <div style="margin-bottom: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 10px; border-left: 4px solid var(--primary);">
-                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">📋 Cara Penggunaan Umum</h3>
+                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">Cara Penggunaan Umum</h3>
                 <ol style="color: var(--text-sec); line-height: 1.8; margin: 0; padding-left: 1.5rem;">
                     <li><strong>Daftar/Login</strong> → Buat akun atau masuk ke sistem</li>
                     <li><strong>Buka Patients</strong> → Klik menu "Patients" di navbar</li>
@@ -23,12 +23,12 @@
             </div>
 
             <div style="margin-bottom: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 10px; border-left: 4px solid var(--primary);">
-                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">🤖 Cara Menggunakan AI Forensic Analysis</h3>
+                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">Cara Menggunakan AI Forensic Analysis</h3>
                 <ol style="color: var(--text-sec); line-height: 1.8; margin: 0; padding-left: 1.5rem;">
                     <li>Login dan pilih/buat patient</li>
                     <li>Upload medical image (PNG/JPG/JPEG)</li>
                     <li>Klik tombol <strong>"Preview"</strong> pada gambar</li>
-                    <li>Di panel FILTER, cari kategori <strong>"🔬 AI Forensic Analysis"</strong></li>
+                    <li>Di panel FILTER, cari kategori <strong>"AI Forensic Analysis"</strong></li>
                     <li>Klik tombol <strong>"Forensic AI Analysis"</strong></li>
                     <li>Konfirmasi dialog yang muncul</li>
                     <li>Tunggu 5-15 detik untuk proses analisis</li>
@@ -37,16 +37,16 @@
             </div>
 
             <div style="margin-bottom: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 10px; border-left: 4px solid var(--primary);">
-                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">🎨 Apa arti warna pada bounding box?</h3>
+                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">Apa arti warna pada bounding box?</h3>
                 <ul style="color: var(--text-sec); line-height: 1.8; margin: 0; padding-left: 1.5rem; list-style: none;">
-                    <li>🟢 <strong>Hijau</strong> = Cedera Ringan (area < 1000 px²)</li>
-                    <li>🟡 <strong>Kuning</strong> = Cedera Sedang (area 1000-3000 px²)</li>
-                    <li>🔴 <strong>Merah</strong> = Cedera Parah (area > 3000 px²)</li>
+                    <li><strong>Hijau</strong> = Cedera Ringan (area < 1000 px²)</li>
+                    <li><strong>Kuning</strong> = Cedera Sedang (area 1000-3000 px²)</li>
+                    <li><strong>Merah</strong> = Cedera Parah (area > 3000 px²)</li>
                 </ul>
             </div>
 
             <div style="margin-bottom: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 10px; border-left: 4px solid var(--primary);">
-                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">📊 Apa saja jenis cedera yang bisa dideteksi?</h3>
+                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">Apa saja jenis cedera yang bisa dideteksi?</h3>
                 <ul style="color: var(--text-sec); line-height: 1.8; margin: 0; padding-left: 1.5rem;">
                     <li><strong>Fracture</strong> - Patah tulang</li>
                     <li><strong>Bruise</strong> - Memar</li>
@@ -56,21 +56,21 @@
             </div>
 
             <div style="margin-bottom: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 10px; border-left: 4px solid var(--primary);">
-                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">⏱️ Berapa lama proses analisis?</h3>
+                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">Berapa lama proses analisis?</h3>
                 <p style="color: var(--text-sec); line-height: 1.8; margin: 0;">
                     Proses AI Forensic Analysis biasanya memakan waktu <strong>5-15 detik</strong>, tergantung ukuran gambar dan koneksi internet. Sistem akan memanggil Roboflow API, memproses hasil, dan membuat annotated image.
                 </p>
             </div>
 
             <div style="margin-bottom: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 10px; border-left: 4px solid var(--primary);">
-                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">🖼️ Format gambar apa yang didukung?</h3>
+                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">Format gambar apa yang didukung?</h3>
                 <p style="color: var(--text-sec); line-height: 1.8; margin: 0;">
                     Sistem mendukung format: <strong>PNG, JPG, JPEG, dan DCM</strong>. Ukuran gambar yang direkomendasikan adalah <strong>640x640 - 1280x1280 px</strong> untuk hasil optimal.
                 </p>
             </div>
 
             <div style="margin-bottom: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 10px; border-left: 4px solid var(--primary);">
-                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">❌ Kenapa analisis gagal?</h3>
+                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">Kenapa analisis gagal?</h3>
                 <p style="color: var(--text-sec); line-height: 1.8; margin: 0 0 0.5rem 0;">Beberapa kemungkinan penyebab:</p>
                 <ul style="color: var(--text-sec); line-height: 1.8; margin: 0; padding-left: 1.5rem;">
                     <li>Koneksi internet bermasalah</li>
@@ -82,14 +82,14 @@
             </div>
 
             <div style="margin-bottom: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 10px; border-left: 4px solid var(--primary);">
-                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">🔒 Apakah data saya aman?</h3>
+                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">Apakah data saya aman?</h3>
                 <p style="color: var(--text-sec); line-height: 1.8; margin: 0;">
                     Ya, sistem menggunakan authentication untuk semua operasi sensitif, CSRF protection, dan activity logging. Gambar disimpan secara lokal di server dan hanya dapat diakses oleh user yang login.
                 </p>
             </div>
 
             <div style="margin-bottom: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 10px; border-left: 4px solid var(--primary);">
-                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">📚 Dimana saya bisa belajar lebih lanjut?</h3>
+                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">Dimana saya bisa belajar lebih lanjut?</h3>
                 <p style="color: var(--text-sec); line-height: 1.8; margin: 0;">
                     Dokumentasi lengkap tersedia di folder project:
                 </p>

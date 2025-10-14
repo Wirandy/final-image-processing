@@ -14,7 +14,7 @@ class StudyImage extends Model
         'patient_id',
         'original_path',
         'processed_path',
-        'annotated_path',
+        'processing_history',
         'method',
         'features_text',
         'forensic_analysis',
@@ -25,6 +25,7 @@ class StudyImage extends Model
 
     protected $casts = [
         'forensic_analysis' => 'array',
+        'processing_history' => 'array',
     ];
 
     public function patient(): BelongsTo

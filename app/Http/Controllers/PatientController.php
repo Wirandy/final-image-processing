@@ -25,8 +25,10 @@ class PatientController extends Controller
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'identifier' => ['nullable', 'string', 'max:255'],
         ]);
+
+        // Automatically set identifier from logged-in user's email
+        $data['identifier'] = $request->user()->email ?? 'unknown';
 
         $patient = Patient::create($data);
 
@@ -44,7 +46,7 @@ class PatientController extends Controller
     public function show(Patient $patient): View
     {
         $patient->load(['images' => function ($q) {
-            $q->orderByDesc('id');
+            $q->orderByDesc('id')->limit(3);
         }]);
         return view('patients.show', compact('patient'));
     }
@@ -66,6 +68,54 @@ class PatientController extends Controller
         ]);
 
         return redirect()->route('patients.show', $patient)->with('status', 'Notes updated successfully');
+    }
+
+    public function destroy(Request $request, Patient $patient): RedirectResponse
+    {
+        // Check if user owns this patient (identifier matches user email)
+        if ($patient->identifier !== $request->user()->email) {
+            return back()->with('error', 'You can only delete patients you created.');
+        }
+
+        // Delete all images and their files
+        foreach ($patient->images as $image) {
+            try {
+                // Delete original file
+                if ($image->original_path) {
+                    \Storage::disk('public')->delete($image->original_path);
+                }
+                // Delete processed file
+                if ($image->processed_path) {
+                    \Storage::disk('public')->delete($image->processed_path);
+                }
+                // Delete all files in processing history
+                if ($image->processing_history) {
+                    foreach ($image->processing_history as $history) {
+                        if (isset($history['path'])) {
+                            \Storage::disk('public')->delete($history['path']);
+                        }
+                    }
+                }
+            } catch (\Throwable $e) {
+                // ignore file deletion errors
+            }
+            
+            $image->delete();
+        }
+
+        // Log activity
+        ActivityLog::create([
+            'action' => 'patient.delete',
+            'user_id' => $request->user()->id,
+            'patient_id' => $patient->id,
+            'ip' => $request->ip(),
+            'user_agent' => (string) $request->header('User-Agent'),
+        ]);
+
+        // Delete patient
+        $patient->delete();
+
+        return redirect()->route('patients.index')->with('status', 'Patient and all associated images deleted successfully');
     }
 }
 

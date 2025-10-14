@@ -10,17 +10,11 @@
         <h3 style="margin-top:0;">New Patient</h3>
         <form method="post" action="{{ route('patients.store') }}">
             @csrf
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-                <div>
-                    <label style="display:block; margin-bottom:.4rem; font-weight:600; font-size:.85rem; text-transform:uppercase;">Name</label>
-                    <input name="name" required style="box-sizing:border-box;">
-                </div>
-                <div>
-                    <label style="display:block; margin-bottom:.4rem; font-weight:600; font-size:.85rem; text-transform:uppercase;">Identifier (Email)</label>
-                    <input name="identifier" type="email" style="box-sizing:border-box;">
-                </div>
+            <div>
+                <label style="display:block; margin-bottom:.4rem; font-weight:600; font-size:.85rem; text-transform:uppercase;">Name</label>
+                <input name="name" required style="box-sizing:border-box;">
             </div>
-            <button type="submit" class="btn btn-primary" style="margin-top:1.25rem; width:auto;">Save Patient</button>
+            <button type="submit" class="btn btn-primary" style="margin-top:1.25rem; width:auto;">Save</button>
         </form>
     </div>
     @endauth
@@ -34,7 +28,20 @@
                 <tr>
                     <td>{{ $p->name }}</td>
                     <td>{{ $p->identifier }}</td>
-                    <td style="text-align:center;"><a class="btn btn-primary" style="display:inline-block; width:auto; text-decoration:none; font-size:.85rem; padding:.35rem .7rem;" href="{{ route('patients.show', $p) }}">Open</a></td>
+                    <td style="text-align:center;">
+                        <div style="display:flex; gap:.5rem; justify-content:center; align-items:center;">
+                            <a class="btn btn-primary" style="display:inline-block; width:auto; text-decoration:none; font-size:.85rem; padding:.35rem .7rem;" href="{{ route('patients.show', $p) }}">VIEW</a>
+                            @auth
+                                @if($p->identifier === auth()->user()->email)
+                                <form method="post" action="{{ route('patients.destroy', $p) }}" style="margin:0;" onsubmit="return confirm('Delete this patient and all associated images?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger" style="font-size:.85rem; padding:.35rem .7rem; width:auto;">DELETE</button>
+                                </form>
+                                @endif
+                            @endauth
+                        </div>
+                    </td>
                 </tr>
             @endforeach
             </tbody>

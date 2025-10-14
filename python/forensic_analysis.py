@@ -270,29 +270,22 @@ def analyze_forensic_image(image_path, api_key=API_KEY, model_id=MODEL_ID):
 def generate_summary(classifications, overall_severity, post_mortem):
     """Generate comprehensive forensic analysis summary"""
     count = len(classifications)
-    summary = "=== FORENSIC ANALYSIS SUMMARY ===\n\n"
+    summary = ""
     
-    summary += f"Total Injuries Detected: {count}\n"
-    summary += f"Overall Severity: {overall_severity}\n\n"
+    summary += f"Total Lesi/Cedera Terdeteksi: {count}\n"
+    summary += f"Tingkat Keparahan Keseluruhan: {overall_severity}\n\n"
     
     if count > 0:
-        summary += "INJURY DETAILS:\n"
-        summary += "-" * 50 + "\n"
+        summary += "TEMUAN:\n\n"
         for i, cls in enumerate(classifications, 1):
-            summary += f"\n{i}. {cls['type']} ({cls['class']})\n"
-            summary += f"   Confidence: {cls['confidence']}%\n"
-            summary += f"   Severity: {cls['severity']}\n"
-            summary += f"   Probable Cause: {cls['cause']}\n"
-            summary += f"   Area: {cls['area']:.2f} px²\n"
-            summary += f"   Bounding Box: {cls['bbox']}\n"
+            summary += f"{i}. {cls['type']} - Tingkat Kepercayaan: {cls['confidence']}%\n"
+            summary += f"   Keparahan: {cls['severity']}\n"
+            summary += f"   Kemungkinan Penyebab: {cls['cause']}\n\n"
     
     if post_mortem['detected']:
-        summary += "\n" + "=" * 50 + "\n"
-        summary += "POST-MORTEM ANALYSIS:\n"
-        summary += "-" * 50 + "\n"
+        summary += "CATATAN TAMBAHAN:\n\n"
         for feature in post_mortem['features']:
-            summary += f"• {feature}\n"
-        summary += f"\nConfidence Level: {post_mortem['confidence']}\n"
+            summary += f"- {feature}\n"
     
     return summary
 

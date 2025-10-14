@@ -197,24 +197,54 @@ class ImageController extends Controller
         $features = $resp['features_text'] ?? null;
 
         if ($resultFile && file_exists($resultFile)) {
-            $destName = 'uploads/processed/'.basename($resultFile);
+            // Generate unique filename to prevent overwriting
+            $extension = pathinfo($resultFile, PATHINFO_EXTENSION);
+            $uniqueName = $image->id . '_' . time() . '_' . Str::random(6) . '.' . $extension;
+            $destName = 'uploads/processed/' . $uniqueName;
             $destPath = storage_path('app/public/'.$destName);
             if (!is_dir(dirname($destPath))) {
                 mkdir(dirname($destPath), 0777, true);
             }
             copy($resultFile, $destPath);
             
-            // Delete old processed file if exists
-            if ($image->processed_path && $image->processed_path !== $destName) {
-                Storage::disk('public')->delete($image->processed_path);
+            // Add to processing history (keep max 3)
+            $history = $image->processing_history ?? [];
+            
+            // Add new entry at the beginning
+            array_unshift($history, [
+                'path' => $destName,
+                'method' => $method,
+                'features_text' => $features,
+                'timestamp' => now()->toDateTimeString(),
+            ]);
+            
+            // Keep only last 3 entries
+            $history = array_slice($history, 0, 3);
+            
+            // Delete old files that are no longer in history (but keep processed_path)
+            if ($image->processing_history) {
+                $historyPaths = array_column($history, 'path');
+                foreach ($image->processing_history as $old) {
+                    $oldPath = $old['path'] ?? null;
+                    // Only delete if: not in new history AND not the current processed_path
+                    if ($oldPath && !in_array($oldPath, $historyPaths) && $oldPath !== $image->processed_path) {
+                        if (Storage::disk('public')->exists($oldPath)) {
+                            Storage::disk('public')->delete($oldPath);
+                        }
+                    }
+                }
             }
             
             $image->processed_path = $destName;
+            $image->processing_history = $history;
         }
 
         // Clear forensic data when applying regular filters
-        // This ensures the new processed image is shown, not the old annotated image
-        // Note: We don't actually clear the data, just let processed_path take priority in display
+        // This ensures the report shows filter data, not old forensic data
+        $image->forensic_analysis = null;
+        $image->forensic_summary = null;
+        $image->injury_count = 0;
+        $image->severity_level = null;
 
         $image->method = $method;
         $image->features_text = $features;
@@ -242,8 +272,13 @@ class ImageController extends Controller
             if ($image->processed_path) {
                 Storage::disk('public')->delete($image->processed_path);
             }
-            if ($image->annotated_path) {
-                Storage::disk('public')->delete($image->annotated_path);
+            // Delete all files in processing history
+            if ($image->processing_history) {
+                foreach ($image->processing_history as $history) {
+                    if (isset($history['path'])) {
+                        Storage::disk('public')->delete($history['path']);
+                    }
+                }
             }
         } catch (\Throwable $e) {
             // ignore
