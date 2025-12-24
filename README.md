@@ -1,4 +1,4 @@
-# 🏥 AIFI Imaging - AI-Powered Forensic Analysis System
+# AIFI Imaging - AI-Powered Forensic Analysis System
 
 > Sistem analisis forensik medis berbasis AI menggunakan Laravel + Python + Roboflow API
 
@@ -8,23 +8,23 @@
 
 ---
 
-## 🚀 Features
+## Features
 
-### 🔬 AI Forensic Analysis (NEW!)
+### AI Forensic Analysis (NEW!)
 - **Injury Classification** - Deteksi otomatis: Fracture, Bruise, Burn, Laceration
 - **Severity Assessment** - Penilaian tingkat keparahan: Ringan, Sedang, Parah
 - **Cause-of-Injury Suggestion** - Prediksi penyebab: Blunt trauma, Sharp force, dll
 - **Post-Mortem Detection** - Identifikasi artifact & pola dekomposisi
 - **Automatic Annotation** - Bounding box berwarna dengan confidence score
 
-### 📊 Image Processing
+### Image Processing
 - 20+ filter & enhancement methods
 - Edge detection (Sobel, Canny, Laplacian)
 - Morphological operations
 - Texture & shape analysis
 - Fourier spectrum analysis
 
-### 👥 Patient Management
+### Patient Management
 - CRUD patient records
 - Image upload & management
 - Activity logging & audit trail
@@ -32,7 +32,7 @@
 
 ---
 
-## 📋 Quick Start
+## Quick Start
 
 ### 1. Requirements
 - Laragon (Apache + MySQL)
@@ -84,7 +84,7 @@ ROBOFLOW_MODEL_ID="wrist-fracture-bindi/1"
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 - **[QUICK_START.md](QUICK_START.md)** - Panduan cepat 5 menit
 - **[INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md)** - Setup lengkap & troubleshooting
@@ -94,7 +94,7 @@ ROBOFLOW_MODEL_ID="wrist-fracture-bindi/1"
 
 ---
 
-## 🎨 Screenshots
+## Screenshots
 
 ### Forensic Analysis Interface
 ```
@@ -107,13 +107,13 @@ ROBOFLOW_MODEL_ID="wrist-fracture-bindi/1"
 ```
 
 ### Color Coding
-- 🟢 **Green** = Ringan (Mild)
-- 🟡 **Yellow** = Sedang (Moderate)
-- 🔴 **Red** = Parah (Severe)
+- **Green** = Ringan (Mild)
+- **Yellow** = Sedang (Moderate)
+- **Red** = Parah (Severe)
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 **Backend:**
 - Laravel 10+
@@ -135,7 +135,7 @@ ROBOFLOW_MODEL_ID="wrist-fracture-bindi/1"
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 final_imaging03/
@@ -160,18 +160,18 @@ final_imaging03/
 
 ---
 
-## 🔐 Security
+## Security
 
-- ✅ Authentication required for all sensitive operations
-- ✅ CSRF protection
-- ✅ SQL injection prevention (Eloquent ORM)
-- ✅ API key stored in .env (not committed)
-- ✅ Activity logging for audit trail
-- ✅ File upload validation
+- Authentication required for all sensitive operations
+- CSRF protection
+- SQL injection prevention (Eloquent ORM)
+- API key stored in .env (not committed)
+- Activity logging for audit trail
+- File upload validation
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 | Problem | Solution |
 |---------|----------|
@@ -185,7 +185,7 @@ Lihat [INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md) untuk detail lengkap.
 
 ---
 
-## 📊 Sample Output
+## Sample Output
 
 ```
 === FORENSIC ANALYSIS SUMMARY ===
@@ -206,19 +206,19 @@ POST-MORTEM ANALYSIS:
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please read the contributing guidelines first.
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License.
 
 ---
 
-## 🙏 Credits
+## Credits
 
 - **Laravel Framework** - Web framework
 - **Roboflow** - AI model & API
@@ -227,7 +227,7 @@ This project is licensed under the MIT License.
 
 ---
 
-## 📞 Support
+## Support
 
 For issues or questions:
 1. Check documentation files
@@ -236,7 +236,7 @@ For issues or questions:
 
 ---
 
-**Built with ❤️ using Laravel + Python + AI**
+**Built with using Laravel + Python + AI**
 
 ---
 
